@@ -84,4 +84,6 @@ Nella colonna **Vincolo**:
 
 Il contenuto del Data Dictionary è stato confrontato con `sql/01_schema.sql`, verificando nomi delle tabelle e delle colonne, tipi Oracle e principali vincoli.
 
-Il collaudo su Oracle non è ancora stato eseguito. Il documento descrive quindi lo schema definito nei sorgenti del progetto e non un catalogo estratto da un database in esecuzione.
+Lo schema è stato inoltre collaudato su Oracle Database 26ai con Oracle SQLcl. Le evidenze dell'esecuzione sono raccolte nella directory `evidenze/`.
+
+Il Data Dictionary descrive lo schema definito nei sorgenti del progetto e non costituisce un'estrazione automatica del catalogo Oracle.

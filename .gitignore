@@ -1,6 +1,7 @@
 # Output generati localmente da SQLcl
 export_nis2_demo.csv
 *.log
+!evidenze/*.log
 
 # File locali degli editor e del sistema operativo
 .DS_Store

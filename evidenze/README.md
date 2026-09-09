@@ -13,3 +13,5 @@ I test contenuti in `06_tests.sql` hanno completato i gruppi T01–T09 senza esi
 L'esportazione finale `export_nis2_demo_26ai.csv` contiene 5 record e 9 colonne ed è priva di prompt e messaggi di feedback SQLcl.
 
 Il file `SHA256SUMS.txt` contiene le impronte SHA-256 delle evidenze tecniche conservate in questa directory.
+
+I file `.log` sono conservati come output delle sessioni SQLcl. Per ragioni di riservatezza, eventuali identificativi dell'ambiente di prova possono essere redatti senza alterare i risultati tecnici del collaudo. I log possono inoltre riportare commenti presenti negli script al momento dell'esecuzione anche quando tali commenti sono stati successivamente aggiornati nei sorgenti.

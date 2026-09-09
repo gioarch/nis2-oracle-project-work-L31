@@ -4,7 +4,7 @@
 -- File: 02_indexes.sql
 --
 -- Sono presenti solo gli indici non già coperti da PK o UNIQUE.
--- Il collaudo su Oracle verrà eseguito in una fase successiva.
+-- Lo script è stato verificato su Oracle Database 26ai con Oracle SQLcl.
 -- ============================================================
 
 -- Gli indici possono velocizzare le JOIN e alcune ricerche, ma richiedono

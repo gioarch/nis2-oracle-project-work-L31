@@ -19,7 +19,7 @@ Il repository verrà aggiornato progressivamente con gli sviluppi del progetto e
 - Oracle SQL Developer
 - Oracle SQLcl
 
-## Contenuti previsti
+## Contenuti del repository
 
 - Script di creazione dello schema database
 - Dati di esempio per il collaudo

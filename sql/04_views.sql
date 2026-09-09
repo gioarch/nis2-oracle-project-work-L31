@@ -3,7 +3,7 @@
 -- VIEW per l'esportazione dei dati
 -- File: 04_views.sql
 --
--- Il collaudo su Oracle verrà eseguito in una fase successiva.
+-- Lo script è stato verificato su Oracle Database 26ai con Oracle SQLcl.
 -- ============================================================
 
 -- La VIEW viene utilizzata per produrre un'esportazione di esempio

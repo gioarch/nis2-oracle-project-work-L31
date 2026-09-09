@@ -5,7 +5,7 @@
 --
 -- Tutti i dati utilizzati sono fittizi e servono esclusivamente
 -- per le prove previste dal progetto.
--- Il collaudo su Oracle verrà eseguito in una fase successiva.
+-- Lo script è stato verificato su Oracle Database 26ai con Oracle SQLcl.
 -- ============================================================
 
 -- Gli ID del dataset utilizzano valori inferiori a 1000, lasciando separata
