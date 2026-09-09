@@ -1,0 +1,8 @@
+# Output generati localmente da SQLcl
+export_nis2_demo.csv
+*.log
+
+# File locali degli editor e del sistema operativo
+.DS_Store
+.idea/
+.vscode/

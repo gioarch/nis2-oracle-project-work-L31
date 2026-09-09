@@ -6,7 +6,9 @@ L'obiettivo del progetto è progettare e implementare una base dati relazionale 
 
 ## Stato di avanzamento
 
-Attualmente sono stati definiti i requisiti principali e sono in corso la progettazione del modello concettuale e logico della base dati e la realizzazione dei primi script SQL.
+Sono stati definiti i requisiti principali e una prima struttura del modello dati. In questa fase sono stati aggiunti gli script per la creazione dello schema Oracle e degli indici aggiuntivi previsti dal progetto.
+
+Il collaudo su Oracle verrà eseguito in una fase successiva.
 
 Il repository verrà aggiornato progressivamente con gli sviluppi del progetto e con la documentazione prodotta durante le varie fasi di lavoro.
 
