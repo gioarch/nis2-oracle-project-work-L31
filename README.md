@@ -8,7 +8,7 @@ L'obiettivo del progetto è progettare e implementare una base dati relazionale 
 
 Sono stati definiti i requisiti principali e la struttura del modello dati. Sono ora disponibili gli script per schema, indici, dataset, VIEW, query, test ed esportazione, insieme alla documentazione tecnica e al diagramma ER.
 
-Il collaudo completo su Oracle non è ancora stato eseguito e verrà svolto nella fase successiva.
+Il collaudo tecnico degli script 01–07 è stato completato su Oracle Database 26ai con Oracle SQLcl. I test di controllo T01–T09 hanno restituito esito positivo e l'esportazione CSV finale contiene 5 record su 9 colonne. Le evidenze di esecuzione sono raccolte nella directory `evidenze/`.
 
 Il repository verrà aggiornato progressivamente con gli sviluppi del progetto e con la documentazione prodotta durante le varie fasi di lavoro.
 

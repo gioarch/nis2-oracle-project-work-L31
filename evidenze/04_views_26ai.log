@@ -1,0 +1,103 @@
+SQL> PROMPT ===== INIZIO 04_views.sql =====
+===== INIZIO 04_views.sql =====
+SQL> @sql/04_views.sql
+SQL> -- ============================================================
+SQL> -- Project Work L-31
+SQL> -- VIEW per l'esportazione dei dati
+SQL> -- File: 04_views.sql
+SQL> --
+SQL> -- Il collaudo su Oracle verrà eseguito in una fase successiva.
+SQL> -- ============================================================
+SQL> 
+SQL> -- La VIEW viene utilizzata per produrre un'esportazione di esempio
+SQL> -- a partire dai dati del progetto.
+SQL> -- Non rappresenta un tracciato ufficiale ACN né il modello della piattaforma ACN.
+SQL> 
+SQL> -- Ogni riga rappresenta un servizio. Asset, fornitori, responsabili e
+SQL> -- punti di contatto vengono aggregati separatamente per evitare duplicazioni.
+SQL> CREATE OR REPLACE VIEW vw_export_nis2_demo AS
+  2  SELECT
+  3      o.id_organizzazione,
+  4      o.nome_organizzazione,
+  5      s.id_servizio,
+  6      s.nome_servizio,
+  7      s.criticita,
+  8      (
+  9          SELECT LISTAGG(
+ 10                     a.nome_asset || ' [' || a.tipo_asset || '; '
+ 11                     || a.criticita || '; ' || a.stato || ']',
+ 12                     ' | '
+ 13                 ) WITHIN GROUP (ORDER BY a.nome_asset)
+ 14          FROM asset_servizi ass
+ 15          JOIN asset a
+ 16              ON a.id_asset = ass.id_asset
+ 17          WHERE ass.id_servizio = s.id_servizio
+ 18      ) AS asset_associati,
+ 19      (
+ 20          SELECT LISTAGG(
+ 21                     f.nome_fornitore || ' [' || sf.tipo_dipendenza || '; '
+ 22                     || sf.criticita_dipendenza || ']',
+ 23                     ' | '
+ 24                 ) WITHIN GROUP (ORDER BY f.nome_fornitore)
+ 25          FROM servizi_fornitori sf
+ 26          JOIN fornitori f
+ 27              ON f.id_fornitore = sf.id_fornitore
+ 28          WHERE sf.id_servizio = s.id_servizio
+ 29      ) AS fornitori_associati,
+ 30      (
+ 31          SELECT LISTAGG(
+ 32                     r.nome || ' ' || r.cognome || ' [' || r.ruolo || ']',
+ 33                     ' | '
+ 34                 ) WITHIN GROUP (ORDER BY r.cognome, r.nome)
+ 35          FROM servizi_responsabili sr
+ 36          JOIN responsabili r
+ 37              ON r.id_responsabile = sr.id_responsabile
+ 38          WHERE sr.id_servizio = s.id_servizio
+ 39      ) AS responsabili_associati,
+ 40      (
+ 41          SELECT LISTAGG(
+ 42                     r.nome || ' ' || r.cognome || ' [' || pc.funzione
+ 43                     || '; priorita ' || TO_CHAR(pc.priorita_contatto, 'FM99')
+ 44                     || '; email ' || NVL(pc.email, '-')
+ 45                     || '; tel ' || NVL(pc.telefono, '-') || ']',
+ 46                     ' | '
+ 47                 ) WITHIN GROUP (
+ 48                     ORDER BY r.cognome, r.nome, pc.funzione, pc.priorita_contatto
+ 49                 )
+ 50          FROM servizi_responsabili sr
+ 51          JOIN responsabili r
+ 52              ON r.id_responsabile = sr.id_responsabile
+ 53          JOIN punti_contatto pc
+ 54              ON pc.id_responsabile = r.id_responsabile
+ 55          WHERE sr.id_servizio = s.id_servizio
+ 56      ) AS punti_contatto_associati
+ 57  FROM servizi s
+ 58  JOIN organizzazioni o
+ 59      ON o.id_organizzazione = s.id_organizzazione;
+
+View VW_EXPORT_NIS2_DEMO created.
+
+SQL> PROMPT ===== VERIFICA 04_views.sql =====
+===== VERIFICA 04_views.sql =====
+SQL> SELECT object_name, object_type, status
+  2  FROM user_objects
+  3  WHERE object_name = 'VW_EXPORT_NIS2_DEMO';
+
+OBJECT_NAME            OBJECT_TYPE    STATUS    
+______________________ ______________ _________ 
+VW_EXPORT_NIS2_DEMO    VIEW           VALID     
+
+1 row selected. 
+
+SQL> SELECT COUNT(*) AS righe_view
+  2  FROM vw_export_nis2_demo;
+
+   RIGHE_VIEW 
+_____________ 
+            5 
+
+1 row selected. 
+
+SQL> PROMPT ===== FINE 04_views.sql =====
+===== FINE 04_views.sql =====
+SQL> SPOOL OFF

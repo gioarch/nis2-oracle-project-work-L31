@@ -1,0 +1,65 @@
+SQL> PROMPT ===== INIZIO 02_indexes.sql =====
+===== INIZIO 02_indexes.sql =====
+SQL> @sql/02_indexes.sql
+SQL> -- ============================================================
+SQL> -- Project Work L-31
+SQL> -- Indici Oracle aggiuntivi
+SQL> -- File: 02_indexes.sql
+SQL> --
+SQL> -- Sono presenti solo gli indici non già coperti da PK o UNIQUE.
+SQL> -- Il collaudo su Oracle verrà eseguito in una fase successiva.
+SQL> -- ============================================================
+SQL> 
+SQL> -- Gli indici possono velocizzare le JOIN e alcune ricerche, ma richiedono
+SQL> -- spazio aggiuntivo e incidono sulle operazioni di scrittura.
+SQL> -- Per il progetto ne vengono quindi aggiunti soltanto tre.
+SQL> 
+SQL> -- Q6: utile per cercare gli asset associati a un servizio.
+SQL> -- La PK di asset_servizi inizia da id_asset.
+SQL> CREATE INDEX idx_asset_servizi_servizio
+  2      ON asset_servizi (id_servizio);
+
+Index IDX_ASSET_SERVIZI_SERVIZIO created.
+
+SQL> 
+SQL> -- Q4/Q5: utile per cercare gli asset associati a un responsabile.
+SQL> -- La PK di asset_responsabili inizia da id_asset.
+SQL> CREATE INDEX idx_asset_resp_responsabile
+  2      ON asset_responsabili (id_responsabile);
+
+Index IDX_ASSET_RESP_RESPONSABILE created.
+
+SQL> 
+SQL> -- Q4/Q5: utile per cercare i servizi associati a un responsabile.
+SQL> -- La PK di servizi_responsabili inizia da id_servizio.
+SQL> CREATE INDEX idx_servizi_resp_responsabile
+  2      ON servizi_responsabili (id_responsabile);
+
+Index IDX_SERVIZI_RESP_RESPONSABILE created.
+
+SQL> 
+SQL> -- Non viene creato un indice su asset.criticita: i valori possibili sono
+SQL> -- soltanto quattro e il dataset di prova è ridotto, quindi l'indice avrebbe
+SQL> -- una selettività limitata.
+SQL> PROMPT ===== VERIFICA 02_indexes.sql =====
+===== VERIFICA 02_indexes.sql =====
+SQL> SELECT index_name, table_name, status
+  2  FROM user_indexes
+  3  WHERE index_name IN (
+  4      'IDX_ASSET_SERVIZI_SERVIZIO',
+  5      'IDX_ASSET_RESP_RESPONSABILE',
+  6      'IDX_SERVIZI_RESP_RESPONSABILE'
+  7  )
+  8  ORDER BY index_name;
+
+INDEX_NAME                       TABLE_NAME              STATUS    
+________________________________ _______________________ _________ 
+IDX_ASSET_RESP_RESPONSABILE      ASSET_RESPONSABILI      VALID     
+IDX_ASSET_SERVIZI_SERVIZIO       ASSET_SERVIZI           VALID     
+IDX_SERVIZI_RESP_RESPONSABILE    SERVIZI_RESPONSABILI    VALID     
+
+3 rows selected. 
+
+SQL> PROMPT ===== FINE 02_indexes.sql =====
+===== FINE 02_indexes.sql =====
+SQL> SPOOL OFF

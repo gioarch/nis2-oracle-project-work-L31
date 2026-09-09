@@ -1,0 +1,95 @@
+SQL> PROMPT ===== VERIFICA DATASET =====
+===== VERIFICA DATASET =====
+SQL> SHOW USER
+USER is "[REDACTED]"
+SQL> SELECT banner_full
+  2  FROM v$version
+  3  WHERE banner_full LIKE 'Oracle%';
+
+BANNER_FULL                                                                                              
+________________________________________________________________________________________________________ 
+Oracle AI Database 26ai EE Extreme Perf Release 23.26.0.0.0 - for Oracle Cloud and Engineered Systems    
+Version 23.26.0.0.0                                                                                      
+
+1 row selected. 
+
+SQL> SELECT CURRENT_TIMESTAMP AS data_verifica
+  2  FROM dual;
+
+DATA_VERIFICA                                  
+______________________________________________ 
+10-SEP-26 12.07.00.612383000 AM EUROPE/ROME    
+
+1 row selected. 
+
+SQL> SELECT 'ORGANIZZAZIONI' tabella, COUNT(*) righe FROM organizzazioni
+  2  UNION ALL
+  3  SELECT 'FORNITORI', COUNT(*) FROM fornitori
+  4  UNION ALL
+  5  SELECT 'ASSET', COUNT(*) FROM asset
+  6  UNION ALL
+  7  SELECT 'SERVIZI', COUNT(*) FROM servizi
+  8  UNION ALL
+  9  SELECT 'RESPONSABILI', COUNT(*) FROM responsabili
+ 10  UNION ALL
+ 11  SELECT 'PUNTI_CONTATTO', COUNT(*) FROM punti_contatto
+ 12  UNION ALL
+ 13  SELECT 'ASSET_SERVIZI', COUNT(*) FROM asset_servizi
+ 14  UNION ALL
+ 15  SELECT 'SERVIZI_FORNITORI', COUNT(*) FROM servizi_fornitori
+ 16  UNION ALL
+ 17  SELECT 'ASSET_RESPONSABILI', COUNT(*) FROM asset_responsabili
+ 18  UNION ALL
+ 19  SELECT 'SERVIZI_RESPONSABILI', COUNT(*) FROM servizi_responsabili
+ 20  UNION ALL
+ 21  SELECT 'DIPENDENZE', COUNT(*) FROM dipendenze
+ 22  UNION ALL
+ 23  SELECT 'STORICO_ASSET', COUNT(*) FROM storico_asset
+ 24  UNION ALL
+ 25  SELECT 'STORICO_SERVIZI', COUNT(*) FROM storico_servizi
+ 26  ORDER BY tabella;
+
+TABELLA                    RIGHE 
+_______________________ ________ 
+ASSET                          8 
+ASSET_RESPONSABILI            13 
+ASSET_SERVIZI                 14 
+DIPENDENZE                    10 
+FORNITORI                      4 
+ORGANIZZAZIONI                 1 
+PUNTI_CONTATTO                 7 
+RESPONSABILI                   5 
+SERVIZI                        5 
+SERVIZI_FORNITORI              7 
+SERVIZI_RESPONSABILI           8 
+STORICO_ASSET                  9 
+STORICO_SERVIZI                7 
+
+13 rows selected. 
+
+SQL> SELECT
+  2        (SELECT COUNT(*) FROM organizzazioni)
+  3      + (SELECT COUNT(*) FROM fornitori)
+  4      + (SELECT COUNT(*) FROM asset)
+  5      + (SELECT COUNT(*) FROM servizi)
+  6      + (SELECT COUNT(*) FROM responsabili)
+  7      + (SELECT COUNT(*) FROM punti_contatto)
+  8      + (SELECT COUNT(*) FROM asset_servizi)
+  9      + (SELECT COUNT(*) FROM servizi_fornitori)
+ 10      + (SELECT COUNT(*) FROM asset_responsabili)
+ 11      + (SELECT COUNT(*) FROM servizi_responsabili)
+ 12      + (SELECT COUNT(*) FROM dipendenze)
+ 13      + (SELECT COUNT(*) FROM storico_asset)
+ 14      + (SELECT COUNT(*) FROM storico_servizi)
+ 15        AS totale_righe
+ 16  FROM dual;
+
+   TOTALE_RIGHE 
+_______________ 
+             98 
+
+1 row selected. 
+
+SQL> PROMPT ===== FINE VERIFICA DATASET =====
+===== FINE VERIFICA DATASET =====
+SQL> SPOOL OFF

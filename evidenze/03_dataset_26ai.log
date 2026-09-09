@@ -1,0 +1,753 @@
+SQL> PROMPT ===== INIZIO 03_dataset.sql =====
+===== INIZIO 03_dataset.sql =====
+SQL> @sql/03_dataset.sql
+SQL> -- ============================================================
+SQL> -- Project Work L-31
+SQL> -- Dataset di esempio
+SQL> -- File: 03_dataset.sql
+SQL> --
+SQL> -- Tutti i dati utilizzati sono fittizi e servono esclusivamente
+SQL> -- per le prove previste dal progetto.
+SQL> -- Il collaudo su Oracle verrà eseguito in una fase successiva.
+SQL> -- ============================================================
+SQL> 
+SQL> -- Gli ID del dataset utilizzano valori inferiori a 1000, lasciando separata
+SQL> -- la numerazione automatica definita dalle colonne IDENTITY.
+SQL> 
+SQL> -- 1. Organizzazione
+SQL> INSERT INTO organizzazioni (id_organizzazione, nome_organizzazione)
+  2  VALUES (1, 'Digital Services Srl');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 2. Fornitori esterni fittizi
+SQL> INSERT INTO fornitori (id_fornitore, nome_fornitore)
+  2  VALUES (1, 'Cloud Provider Alfa - Societa Fittizia');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO fornitori (id_fornitore, nome_fornitore)
+  2  VALUES (2, 'Connettivita Beta - Societa Fittizia');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO fornitori (id_fornitore, nome_fornitore)
+  2  VALUES (3, 'Backup Gamma - Societa Fittizia');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO fornitori (id_fornitore, nome_fornitore)
+  2  VALUES (4, 'Messaggistica Delta - Societa Fittizia');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 3. Asset
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (1, 1, 'Portale Clienti', 'Applicazione web', 'CRITICA', 'ATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (2, 1, 'Database Clienti', 'Database Oracle', 'CRITICA', 'ATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (3, 1, 'Server Applicativo', 'Server virtuale', 'ALTA', 'ATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (4, 1, 'Gateway di Autenticazione', 'Componente software', 'CRITICA', 'ATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (5, 1, 'Sistema Backup', 'Sistema di backup', 'ALTA', 'ATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (6, 1, 'Bilanciatore Web', 'Appliance virtuale', 'ALTA', 'ATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (7, 1, 'Server Reportistica', 'Server virtuale', 'MEDIA', 'INATTIVO');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO asset
+  2      (id_asset, id_organizzazione, nome_asset, tipo_asset, criticita, stato)
+  3  VALUES
+  4      (8, 1, 'Archivio Legacy', 'Archivio dati', 'BASSA', 'DISMESSO');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 4. Servizi erogati
+SQL> INSERT INTO servizi
+  2      (id_servizio, id_organizzazione, nome_servizio, criticita)
+  3  VALUES
+  4      (1, 1, 'Gestione Portale Clienti', 'CRITICA');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi
+  2      (id_servizio, id_organizzazione, nome_servizio, criticita)
+  3  VALUES
+  4      (2, 1, 'Autenticazione Utenti', 'CRITICA');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi
+  2      (id_servizio, id_organizzazione, nome_servizio, criticita)
+  3  VALUES
+  4      (3, 1, 'Continuita e Ripristino', 'ALTA');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi
+  2      (id_servizio, id_organizzazione, nome_servizio, criticita)
+  3  VALUES
+  4      (4, 1, 'Reportistica Clienti', 'MEDIA');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi
+  2      (id_servizio, id_organizzazione, nome_servizio, criticita)
+  3  VALUES
+  4      (5, 1, 'Assistenza Digitale', 'BASSA');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 5. Responsabili con nominativi fittizi
+SQL> INSERT INTO responsabili
+  2      (id_responsabile, id_organizzazione, nome, cognome, ruolo)
+  3  VALUES
+  4      (1, 1, 'NomeFittizio01', 'CognomeFittizio01', 'Responsabile sicurezza informatica');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO responsabili
+  2      (id_responsabile, id_organizzazione, nome, cognome, ruolo)
+  3  VALUES
+  4      (2, 1, 'NomeFittizio02', 'CognomeFittizio02', 'Responsabile infrastrutture');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO responsabili
+  2      (id_responsabile, id_organizzazione, nome, cognome, ruolo)
+  3  VALUES
+  4      (3, 1, 'NomeFittizio03', 'CognomeFittizio03', 'Responsabile applicazioni');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO responsabili
+  2      (id_responsabile, id_organizzazione, nome, cognome, ruolo)
+  3  VALUES
+  4      (4, 1, 'NomeFittizio04', 'CognomeFittizio04', 'Responsabile continuita operativa');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO responsabili
+  2      (id_responsabile, id_organizzazione, nome, cognome, ruolo)
+  3  VALUES
+  4      (5, 1, 'NomeFittizio05', 'CognomeFittizio05', 'Responsabile supporto utenti');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 6. Punti di contatto fittizi
+SQL> -- Il dominio .invalid e i numeri con prefisso 000 sono utilizzati solo come dati di esempio.
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (1, 1, 'Sicurezza informatica', 1,
+  5       'sicurezza.p01@digital-services.example.invalid', '+39 000 0000001');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (2, 1, 'Sicurezza informatica', 2,
+  5       'sicurezza.backup.p01@digital-services.example.invalid', NULL);
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (3, 2, 'Gestione infrastrutture', 1,
+  5       NULL, '+39 000 0000002');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (4, 3, 'Gestione applicazioni', 1,
+  5       'applicazioni.p03@digital-services.example.invalid', '+39 000 0000003');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (5, 4, 'Continuita operativa', 1,
+  5       'continuita.p04@digital-services.example.invalid', '+39 000 0000004');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (6, 5, 'Supporto utenti', 1,
+  5       'supporto.p05@digital-services.example.invalid', '+39 000 0000005');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO punti_contatto
+  2      (id_punto_contatto, id_responsabile, funzione, priorita_contatto, email, telefono)
+  3  VALUES
+  4      (7, 2, 'Reperibilita infrastrutture', 1,
+  5       'reperibilita.p02@digital-services.example.invalid', NULL);
+
+1 row inserted.
+
+SQL> 
+SQL> -- 7. Associazioni molti-a-molti tra asset e servizi
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (1, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (2, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (3, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (4, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (6, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (2, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (3, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (4, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (2, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (5, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (2, 4);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (7, 4);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (1, 5);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_servizi (id_asset, id_servizio) VALUES (3, 5);
+
+1 row inserted.
+
+SQL> 
+SQL> -- 8. Dipendenze dei servizi da fornitori esterni
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (1, 1, 'Hosting cloud', 'CRITICA', 'Erogazione fittizia delle risorse cloud del portale.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (1, 2, 'Connettivita', 'ALTA', 'Collegamento fittizio necessario alla raggiungibilita del portale.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (2, 1, 'Piattaforma cloud', 'ALTA', 'Risorse fittizie per i componenti di autenticazione.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (3, 1, 'Storage cloud', 'ALTA', 'Destinazione fittizia secondaria delle copie.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (3, 3, 'Backup gestito', 'CRITICA', 'Supporto fittizio alle copie e al ripristino.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (5, 2, 'Connettivita', 'MEDIA', 'Canale fittizio per il servizio di assistenza.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO servizi_fornitori
+  2      (id_servizio, id_fornitore, tipo_dipendenza, criticita_dipendenza, descrizione)
+  3  VALUES
+  4      (5, 4, 'Invio notifiche', 'MEDIA', 'Recapito fittizio delle notifiche di assistenza.');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 9. Responsabilita sugli asset
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (1, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (1, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (2, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (2, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (3, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (3, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (4, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (4, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (5, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (5, 4);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (6, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (7, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO asset_responsabili (id_asset, id_responsabile) VALUES (8, 4);
+
+1 row inserted.
+
+SQL> 
+SQL> -- 10. Responsabilita sui servizi
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (1, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (1, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (2, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (2, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (3, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (3, 4);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (4, 3);
+
+1 row inserted.
+
+SQL> INSERT INTO servizi_responsabili (id_servizio, id_responsabile) VALUES (5, 5);
+
+1 row inserted.
+
+SQL> 
+SQL> -- 11. Dipendenze tecniche tra asset
+SQL> -- L'asset origine dipende dal funzionamento dell'asset richiesto.
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (1, 1, 3, 'Esecuzione applicativa', 'Il portale dipende dal server applicativo.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (2, 1, 4, 'Autenticazione', 'Il portale dipende dal gateway di autenticazione.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (3, 1, 6, 'Bilanciamento', 'Il portale dipende dal bilanciatore web.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (4, 3, 2, 'Persistenza dati', 'Il server applicativo dipende dal database clienti.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (5, 3, 4, 'Verifica identita', 'Il server applicativo dipende dal gateway di autenticazione.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (6, 4, 2, 'Consultazione credenziali', 'Il gateway dipende dal database clienti.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (7, 5, 2, 'Copia dati', 'Il sistema backup dipende dal database clienti.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (8, 6, 3, 'Instradamento', 'Il bilanciatore dipende dal server applicativo.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (9, 7, 2, 'Lettura dati', 'Il server reportistica dipende dal database clienti.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO dipendenze
+  2      (id_dipendenza, id_asset_origine, id_asset_richiesto, tipo_dipendenza, descrizione)
+  3  VALUES
+  4      (10, 7, 3, 'Elaborazione report', 'Il server reportistica dipende dal server applicativo.');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 12. Storico degli asset
+SQL> -- Per gli asset versionati, l'ultima versione corrisponde allo stato corrente.
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (1, 1, 1, TO_DATE('2025-01-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2025-05-31', 'YYYY-MM-DD'), 'Portale Clienti Legacy',
+  8       'Applicazione web', 'BASSA', 'INATTIVO', 'INSERIMENTO',
+  9       'Prima fotografia fittizia del portale.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (2, 1, 2, TO_DATE('2025-06-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2026-02-28', 'YYYY-MM-DD'), 'Portale Clienti',
+  8       'Applicazione web', 'ALTA', 'ATTIVO', 'ATTIVAZIONE',
+  9       'Attivazione fittizia e rivalutazione della criticita.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (3, 1, 3, TO_DATE('2026-03-01', 'YYYY-MM-DD'),
+  7       NULL, 'Portale Clienti', 'Applicazione web', 'CRITICA', 'ATTIVO',
+  8       'RIVALUTAZIONE', 'Classificazione fittizia aggiornata a CRITICA.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (4, 2, 1, TO_DATE('2025-01-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2025-08-31', 'YYYY-MM-DD'), 'Database Clienti',
+  8       'Database Oracle', 'MEDIA', 'ATTIVO', 'INSERIMENTO',
+  9       'Prima fotografia fittizia del database.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (5, 2, 2, TO_DATE('2025-09-01', 'YYYY-MM-DD'),
+  7       NULL, 'Database Clienti', 'Database Oracle', 'CRITICA', 'ATTIVO',
+  8       'RIVALUTAZIONE', 'Classificazione fittizia aggiornata a CRITICA.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (6, 5, 1, TO_DATE('2025-02-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2026-01-14', 'YYYY-MM-DD'), 'Sistema Copie',
+  8       'Sistema di backup', 'MEDIA', 'ATTIVO', 'INSERIMENTO',
+  9       'Prima fotografia fittizia del sistema di copie.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (7, 5, 2, TO_DATE('2026-01-15', 'YYYY-MM-DD'),
+  7       NULL, 'Sistema Backup', 'Sistema di backup', 'ALTA', 'ATTIVO',
+  8       'AGGIORNAMENTO', 'Ridenominazione fittizia e rivalutazione della criticita.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (8, 8, 1, TO_DATE('2024-01-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2025-12-31', 'YYYY-MM-DD'), 'Archivio Legacy',
+  8       'Archivio dati', 'BASSA', 'INATTIVO', 'INSERIMENTO',
+  9       'Prima fotografia fittizia dell archivio legacy.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_asset
+  2      (id_storico_asset, id_asset, numero_versione, data_inizio_validita,
+  3       data_fine_validita, nome_asset, tipo_asset, criticita, stato,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (9, 8, 2, TO_DATE('2026-01-01', 'YYYY-MM-DD'),
+  7       NULL, 'Archivio Legacy', 'Archivio dati', 'BASSA', 'DISMESSO',
+  8       'DISMISSIONE', 'Fotografia fittizia della dismissione.');
+
+1 row inserted.
+
+SQL> 
+SQL> -- 13. Storico dei servizi
+SQL> -- Per i servizi versionati, l'ultima versione corrisponde allo stato corrente.
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (1, 1, 1, TO_DATE('2025-01-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2025-06-30', 'YYYY-MM-DD'), 'Portale Informativo Clienti',
+  8       'MEDIA', 'INSERIMENTO', 'Prima fotografia fittizia del servizio.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (2, 1, 2, TO_DATE('2025-07-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2026-02-28', 'YYYY-MM-DD'), 'Gestione Portale Clienti',
+  8       'ALTA', 'AGGIORNAMENTO', 'Ampliamento fittizio del servizio.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (3, 1, 3, TO_DATE('2026-03-01', 'YYYY-MM-DD'),
+  7       NULL, 'Gestione Portale Clienti', 'CRITICA', 'RIVALUTAZIONE',
+  8       'Classificazione fittizia aggiornata a CRITICA.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (4, 2, 1, TO_DATE('2025-03-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2025-11-30', 'YYYY-MM-DD'), 'Autenticazione Utenti',
+  8       'ALTA', 'INSERIMENTO', 'Prima fotografia fittizia del servizio.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (5, 2, 2, TO_DATE('2025-12-01', 'YYYY-MM-DD'),
+  7       NULL, 'Autenticazione Utenti', 'CRITICA', 'RIVALUTAZIONE',
+  8       'Classificazione fittizia aggiornata a CRITICA.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (6, 3, 1, TO_DATE('2025-04-01', 'YYYY-MM-DD'),
+  7       TO_DATE('2026-01-14', 'YYYY-MM-DD'), 'Backup Dati',
+  8       'MEDIA', 'INSERIMENTO', 'Prima fotografia fittizia del servizio.');
+
+1 row inserted.
+
+SQL> 
+SQL> INSERT INTO storico_servizi
+  2      (id_storico_servizio, id_servizio, numero_versione,
+  3       data_inizio_validita, data_fine_validita, nome_servizio, criticita,
+  4       tipo_modifica, descrizione_modifica)
+  5  VALUES
+  6      (7, 3, 2, TO_DATE('2026-01-15', 'YYYY-MM-DD'),
+  7       NULL, 'Continuita e Ripristino', 'ALTA', 'AGGIORNAMENTO',
+  8       'Ridenominazione fittizia e ampliamento del servizio.');
+
+1 row inserted.
+
+SQL> 
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> PROMPT ===== VERIFICA 03_dataset.sql =====
+===== VERIFICA 03_dataset.sql =====
+SQL> spool off

@@ -1,0 +1,342 @@
+SQL> PROMPT ===== INIZIO 06_tests.sql =====
+===== INIZIO 06_tests.sql =====
+SQL> SELECT CURRENT_TIMESTAMP AS data_test
+  2  FROM dual;
+
+DATA_TEST                                      
+______________________________________________ 
+10-SEP-26 12.35.02.991381000 AM EUROPE/ROME    
+
+1 row selected. 
+
+SQL> @sql/06_tests.sql
+SQL> -- ============================================================
+SQL> -- Project Work L-31
+SQL> -- Test di controllo
+SQL> -- File: 06_tests.sql
+SQL> --
+SQL> -- Eseguire dopo 01_schema.sql, 02_indexes.sql, 03_dataset.sql e 04_views.sql.
+SQL> -- I test sono di sola lettura e non modificano i dati.
+SQL> -- Il collaudo su Oracle verrà eseguito in una fase successiva.
+SQL> -- ============================================================
+SQL> 
+SQL> SET PAGESIZE 100
+SQL> SET LINESIZE 220
+SQL> 
+SQL> PROMPT === T01 - Conteggi attesi del dataset dimostrativo ===
+=== T01 - Conteggi attesi del dataset dimostrativo ===
+SQL> SELECT 'organizzazioni' AS oggetto, COUNT(*) AS valore_rilevato, 1 AS valore_atteso,
+  2         CASE WHEN COUNT(*) = 1 THEN 'OK' ELSE 'KO' END AS esito
+  3  FROM organizzazioni
+  4  UNION ALL
+  5  SELECT 'fornitori', COUNT(*), 4, CASE WHEN COUNT(*) = 4 THEN 'OK' ELSE 'KO' END
+  6  FROM fornitori
+  7  UNION ALL
+  8  SELECT 'asset', COUNT(*), 8, CASE WHEN COUNT(*) = 8 THEN 'OK' ELSE 'KO' END
+  9  FROM asset
+ 10  UNION ALL
+ 11  SELECT 'servizi', COUNT(*), 5, CASE WHEN COUNT(*) = 5 THEN 'OK' ELSE 'KO' END
+ 12  FROM servizi
+ 13  UNION ALL
+ 14  SELECT 'responsabili', COUNT(*), 5, CASE WHEN COUNT(*) = 5 THEN 'OK' ELSE 'KO' END
+ 15  FROM responsabili
+ 16  UNION ALL
+ 17  SELECT 'punti_contatto', COUNT(*), 7, CASE WHEN COUNT(*) = 7 THEN 'OK' ELSE 'KO' END
+ 18  FROM punti_contatto
+ 19  UNION ALL
+ 20  SELECT 'asset_servizi', COUNT(*), 14, CASE WHEN COUNT(*) = 14 THEN 'OK' ELSE 'KO' END
+ 21  FROM asset_servizi
+ 22  UNION ALL
+ 23  SELECT 'servizi_fornitori', COUNT(*), 7, CASE WHEN COUNT(*) = 7 THEN 'OK' ELSE 'KO' END
+ 24  FROM servizi_fornitori
+ 25  UNION ALL
+ 26  SELECT 'asset_responsabili', COUNT(*), 13, CASE WHEN COUNT(*) = 13 THEN 'OK' ELSE 'KO' END
+ 27  FROM asset_responsabili
+ 28  UNION ALL
+ 29  SELECT 'servizi_responsabili', COUNT(*), 8, CASE WHEN COUNT(*) = 8 THEN 'OK' ELSE 'KO' END
+ 30  FROM servizi_responsabili
+ 31  UNION ALL
+ 32  SELECT 'dipendenze', COUNT(*), 10, CASE WHEN COUNT(*) = 10 THEN 'OK' ELSE 'KO' END
+ 33  FROM dipendenze
+ 34  UNION ALL
+ 35  SELECT 'storico_asset', COUNT(*), 9, CASE WHEN COUNT(*) = 9 THEN 'OK' ELSE 'KO' END
+ 36  FROM storico_asset
+ 37  UNION ALL
+ 38  SELECT 'storico_servizi', COUNT(*), 7, CASE WHEN COUNT(*) = 7 THEN 'OK' ELSE 'KO' END
+ 39  FROM storico_servizi
+ 40  ORDER BY oggetto;
+
+OGGETTO                    VALORE_RILEVATO    VALORE_ATTESO ESITO    
+_______________________ __________________ ________________ ________ 
+asset                                    8                8 OK       
+asset_responsabili                      13               13 OK       
+asset_servizi                           14               14 OK       
+dipendenze                              10               10 OK       
+fornitori                                4                4 OK       
+organizzazioni                           1                1 OK       
+punti_contatto                           7                7 OK       
+responsabili                             5                5 OK       
+servizi                                  5                5 OK       
+servizi_fornitori                        7                7 OK       
+servizi_responsabili                     8                8 OK       
+storico_asset                            9                9 OK       
+storico_servizi                          7                7 OK       
+
+13 rows selected. 
+
+SQL> 
+SQL> PROMPT === T02 - Copertura degli elementi principali ===
+=== T02 - Copertura degli elementi principali ===
+SQL> SELECT controllo, valore_rilevato, valore_minimo,
+  2         CASE WHEN valore_rilevato >= valore_minimo THEN 'OK' ELSE 'KO' END AS esito
+  3  FROM (
+  4      SELECT 'asset critici' AS controllo, COUNT(*) AS valore_rilevato, 1 AS valore_minimo
+  5      FROM asset WHERE criticita = 'CRITICA'
+  6      UNION ALL
+  7      SELECT 'servizi', COUNT(*), 1 FROM servizi
+  8      UNION ALL
+  9      SELECT 'servizi con fornitori', COUNT(DISTINCT id_servizio), 1 FROM servizi_fornitori
+ 10      UNION ALL
+ 11      SELECT 'responsabilita su asset', COUNT(*), 1 FROM asset_responsabili
+ 12      UNION ALL
+ 13      SELECT 'responsabilita su servizi', COUNT(*), 1 FROM servizi_responsabili
+ 14      UNION ALL
+ 15      SELECT 'punti di contatto', COUNT(*), 1 FROM punti_contatto
+ 16      UNION ALL
+ 17      SELECT 'dipendenze tecniche', COUNT(*), 1 FROM dipendenze
+ 18  )
+ 19  ORDER BY controllo;
+
+CONTROLLO                       VALORE_RILEVATO    VALORE_MINIMO ESITO    
+____________________________ __________________ ________________ ________ 
+asset critici                                 3                1 OK       
+dipendenze tecniche                          10                1 OK       
+punti di contatto                             7                1 OK       
+responsabilita su asset                      13                1 OK       
+responsabilita su servizi                     8                1 OK       
+servizi                                       5                1 OK       
+servizi con fornitori                         4                1 OK       
+
+7 rows selected. 
+
+SQL> 
+SQL> PROMPT === T03 - Relazioni N:M effettivamente popolate ===
+=== T03 - Relazioni N:M effettivamente popolate ===
+SQL> SELECT
+  2      CASE
+  3          WHEN EXISTS (
+  4              SELECT 1 FROM asset_servizi
+  5              GROUP BY id_asset HAVING COUNT(*) > 1
+  6          )
+  7          AND EXISTS (
+  8              SELECT 1 FROM asset_servizi
+  9              GROUP BY id_servizio HAVING COUNT(*) > 1
+ 10          )
+ 11          THEN 'OK' ELSE 'KO'
+ 12      END AS esito_asset_servizi,
+ 13      CASE
+ 14          WHEN EXISTS (
+ 15              SELECT 1 FROM asset_responsabili
+ 16              GROUP BY id_responsabile HAVING COUNT(*) > 1
+ 17          )
+ 18          AND EXISTS (
+ 19              SELECT 1 FROM servizi_responsabili
+ 20              GROUP BY id_responsabile HAVING COUNT(*) > 1
+ 21          )
+ 22          THEN 'OK' ELSE 'KO'
+ 23      END AS esito_responsabilita
+ 24  FROM dual;
+
+ESITO_ASSET_SERVIZI    ESITO_RESPONSABILITA    
+______________________ _______________________ 
+OK                     OK                      
+
+1 row selected. 
+
+SQL> 
+SQL> PROMPT === T04 - Assenza di auto-dipendenze ===
+=== T04 - Assenza di auto-dipendenze ===
+SQL> SELECT COUNT(*) AS auto_dipendenze,
+  2         CASE WHEN COUNT(*) = 0 THEN 'OK' ELSE 'KO' END AS esito
+  3  FROM dipendenze
+  4  WHERE id_asset_origine = id_asset_richiesto;
+
+   AUTO_DIPENDENZE ESITO    
+__________________ ________ 
+                 0 OK       
+
+1 row selected. 
+
+SQL> 
+SQL> PROMPT === T05 - Unicita delle versioni storiche ===
+=== T05 - Unicita delle versioni storiche ===
+SQL> SELECT 'storico_asset' AS oggetto, COUNT(*) AS duplicati,
+  2         CASE WHEN COUNT(*) = 0 THEN 'OK' ELSE 'KO' END AS esito
+  3  FROM (
+  4      SELECT id_asset, numero_versione
+  5      FROM storico_asset
+  6      GROUP BY id_asset, numero_versione
+  7      HAVING COUNT(*) > 1
+  8  )
+  9  UNION ALL
+ 10  SELECT 'storico_servizi', COUNT(*),
+ 11         CASE WHEN COUNT(*) = 0 THEN 'OK' ELSE 'KO' END
+ 12  FROM (
+ 13      SELECT id_servizio, numero_versione
+ 14      FROM storico_servizi
+ 15      GROUP BY id_servizio, numero_versione
+ 16      HAVING COUNT(*) > 1
+ 17  );
+
+OGGETTO               DUPLICATI ESITO    
+__________________ ____________ ________ 
+storico_asset                 0 OK       
+storico_servizi               0 OK       
+
+2 rows selected. 
+
+SQL> 
+SQL> PROMPT === T06 - Ricostruibilita dello storico ===
+=== T06 - Ricostruibilita dello storico ===
+SQL> SELECT
+  2      CASE
+  3          WHEN EXISTS (
+  4              SELECT 1 FROM storico_asset
+  5              GROUP BY id_asset HAVING COUNT(*) >= 2
+  6          ) THEN 'OK' ELSE 'KO'
+  7      END AS storico_asset_ricostruibile,
+  8      CASE
+  9          WHEN EXISTS (
+ 10              SELECT 1 FROM storico_servizi
+ 11              GROUP BY id_servizio HAVING COUNT(*) >= 2
+ 12          ) THEN 'OK' ELSE 'KO'
+ 13      END AS storico_servizi_ricostruibile
+ 14  FROM dual;
+
+STORICO_ASSET_RICOSTRUIBILE    STORICO_SERVIZI_RICOSTRUIBILE    
+______________________________ ________________________________ 
+OK                             OK                               
+
+1 row selected. 
+
+SQL> 
+SQL> PROMPT === T07 - Coerenza dell'ultimo snapshot con lo stato corrente ===
+=== T07 - Coerenza dell'ultimo snapshot con lo stato corrente ===
+SQL> SELECT 'asset' AS oggetto, COUNT(*) AS incoerenze,
+  2         CASE WHEN COUNT(*) = 0 THEN 'OK' ELSE 'KO' END AS esito
+  3  FROM (
+  4      SELECT a.id_asset
+  5      FROM asset a
+  6      JOIN storico_asset sa
+  7        ON sa.id_asset = a.id_asset
+  8       AND sa.data_fine_validita IS NULL
+  9      WHERE sa.nome_asset <> a.nome_asset
+ 10         OR sa.tipo_asset <> a.tipo_asset
+ 11         OR sa.criticita <> a.criticita
+ 12         OR sa.stato <> a.stato
+ 13  )
+ 14  UNION ALL
+ 15  SELECT 'servizi', COUNT(*),
+ 16         CASE WHEN COUNT(*) = 0 THEN 'OK' ELSE 'KO' END
+ 17  FROM (
+ 18      SELECT s.id_servizio
+ 19      FROM servizi s
+ 20      JOIN storico_servizi ss
+ 21        ON ss.id_servizio = s.id_servizio
+ 22       AND ss.data_fine_validita IS NULL
+ 23      WHERE ss.nome_servizio <> s.nome_servizio
+ 24         OR ss.criticita <> s.criticita
+ 25  );
+
+OGGETTO       INCOERENZE ESITO    
+__________ _____________ ________ 
+asset                  0 OK       
+servizi                0 OK       
+
+2 rows selected. 
+
+SQL> 
+SQL> PROMPT === T08 - Risultati significativi delle query principali ===
+=== T08 - Risultati significativi delle query principali ===
+SQL> SELECT requisito, righe_rilevate,
+  2         CASE WHEN righe_rilevate > 0 THEN 'OK' ELSE 'KO' END AS esito
+  3  FROM (
+  4      SELECT 'Q1 asset critici' AS requisito, COUNT(*) AS righe_rilevate
+  5      FROM asset WHERE criticita = 'CRITICA'
+  6      UNION ALL
+  7      SELECT 'Q2 servizi erogati', COUNT(*) FROM servizi
+  8      UNION ALL
+  9      SELECT 'Q3 dipendenze da terze parti', COUNT(*) FROM servizi_fornitori
+ 10      UNION ALL
+ 11      SELECT 'Q4 responsabili',
+ 12             (SELECT COUNT(*) FROM asset_responsabili)
+ 13           + (SELECT COUNT(*) FROM servizi_responsabili)
+ 14      FROM dual
+ 15      UNION ALL
+ 16      SELECT 'Q5 punti di contatto', COUNT(*) FROM punti_contatto
+ 17      UNION ALL
+ 18      SELECT 'Q6 riepilogo servizio', COUNT(*)
+ 19      FROM servizi s
+ 20      WHERE s.id_servizio = 1
+ 21        AND EXISTS (
+ 22            SELECT 1 FROM asset_servizi ass
+ 23            WHERE ass.id_servizio = s.id_servizio
+ 24        )
+ 25        AND EXISTS (
+ 26            SELECT 1 FROM servizi_fornitori sf
+ 27            WHERE sf.id_servizio = s.id_servizio
+ 28        )
+ 29        AND EXISTS (
+ 30            SELECT 1 FROM servizi_responsabili sr
+ 31            WHERE sr.id_servizio = s.id_servizio
+ 32        )
+ 33      UNION ALL
+ 34      SELECT 'Q7 storico asset', COUNT(*) FROM storico_asset WHERE id_asset = 1
+ 35      UNION ALL
+ 36      SELECT 'Q8 storico servizi', COUNT(*) FROM storico_servizi WHERE id_servizio = 1
+ 37      UNION ALL
+ 38      SELECT 'Q9 dipendenze tecniche', COUNT(*) FROM dipendenze
+ 39  )
+ 40  ORDER BY requisito;
+
+REQUISITO                          RIGHE_RILEVATE ESITO    
+_______________________________ _________________ ________ 
+Q1 asset critici                                3 OK       
+Q2 servizi erogati                              5 OK       
+Q3 dipendenze da terze parti                    7 OK       
+Q4 responsabili                                21 OK       
+Q5 punti di contatto                            7 OK       
+Q6 riepilogo servizio                           1 OK       
+Q7 storico asset                                3 OK       
+Q8 storico servizi                              3 OK       
+Q9 dipendenze tecniche                         10 OK       
+
+9 rows selected. 
+
+SQL> 
+SQL> PROMPT === T09 - Interrogabilita e granularita della VIEW di export ===
+=== T09 - Interrogabilita e granularita della VIEW di export ===
+SQL> SELECT
+  2      (SELECT COUNT(*) FROM vw_export_nis2_demo) AS righe_view,
+  3      (SELECT COUNT(*) FROM servizi) AS righe_servizi,
+  4      (SELECT COUNT(DISTINCT id_servizio) FROM vw_export_nis2_demo) AS servizi_distinti,
+  5      CASE
+  6          WHEN (SELECT COUNT(*) FROM vw_export_nis2_demo) = (SELECT COUNT(*) FROM servizi)
+  7           AND (SELECT COUNT(DISTINCT id_servizio) FROM vw_export_nis2_demo)
+  8               = (SELECT COUNT(*) FROM servizi)
+  9          THEN 'OK' ELSE 'KO'
+ 10      END AS esito
+ 11  FROM dual;
+
+   RIGHE_VIEW    RIGHE_SERVIZI    SERVIZI_DISTINTI ESITO    
+_____________ ________________ ___________________ ________ 
+            5                5                   5 OK       
+
+1 row selected. 
+
+SQL> 
+SQL> PROMPT === Fine test: verificare che ogni colonna ESITO riporti OK ===
+=== Fine test: verificare che ogni colonna ESITO riporti OK ===
+SQL> PROMPT ===== FINE 06_tests.sql =====
+===== FINE 06_tests.sql =====
+SQL> SPOOL OFF

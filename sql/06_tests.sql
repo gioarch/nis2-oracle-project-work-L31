@@ -5,7 +5,7 @@
 --
 -- Eseguire dopo 01_schema.sql, 02_indexes.sql, 03_dataset.sql e 04_views.sql.
 -- I test sono di sola lettura e non modificano i dati.
--- Il collaudo su Oracle verrà eseguito in una fase successiva.
+-- Lo script è stato verificato su Oracle Database 26ai con Oracle SQLcl.
 -- ============================================================
 
 SET PAGESIZE 100

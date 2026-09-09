@@ -1,0 +1,401 @@
+SQL> PROMPT ===== STATO SQLBLANKLINES PRIMA DI 05 =====
+===== STATO SQLBLANKLINES PRIMA DI 05 =====
+SQL> SHOW SQLBLANKLINES
+sqlblanklines OFF
+SQL> SELECT CURRENT_TIMESTAMP AS data_test
+  2  FROM dual;
+
+DATA_TEST                                      
+______________________________________________ 
+10-SEP-26 12.10.22.286038000 AM EUROPE/ROME    
+
+1 row selected. 
+
+SQL> PROMPT ===== INIZIO 05_queries.sql =====
+===== INIZIO 05_queries.sql =====
+SQL> @sql/05_queries.sql
+SQL> -- ============================================================
+SQL> -- Project Work L-31
+SQL> -- Query di interrogazione
+SQL> -- File: 05_queries.sql
+SQL> --
+SQL> -- Il collaudo su Oracle verrà eseguito in una fase successiva.
+SQL> -- ============================================================
+SQL> 
+SQL> -- Q1 - Asset critici
+SQL> -- Elenca gli asset con criticità CRITICA e la relativa organizzazione.
+SQL> SELECT
+  2      a.id_asset,
+  3      a.nome_asset,
+  4      a.tipo_asset,
+  5      a.criticita,
+  6      o.nome_organizzazione,
+  7      a.stato
+  8  FROM asset a
+  9  JOIN organizzazioni o
+ 10      ON o.id_organizzazione = a.id_organizzazione
+ 11  WHERE a.criticita = 'CRITICA'
+ 12  ORDER BY a.nome_asset;
+
+   ID_ASSET NOME_ASSET                   TIPO_ASSET             CRITICITA    NOME_ORGANIZZAZIONE     STATO     
+___________ ____________________________ ______________________ ____________ _______________________ _________ 
+          2 Database Clienti             Database Oracle        CRITICA      Digital Services Srl    ATTIVO    
+          4 Gateway di Autenticazione    Componente software    CRITICA      Digital Services Srl    ATTIVO    
+          1 Portale Clienti              Applicazione web       CRITICA      Digital Services Srl    ATTIVO    
+
+3 rows selected. 
+
+SQL> 
+SQL> -- Q2 - Servizi erogati
+SQL> -- Elenca i servizi e la relativa organizzazione.
+SQL> SELECT
+  2      s.id_servizio,
+  3      s.nome_servizio,
+  4      s.criticita,
+  5      o.nome_organizzazione
+  6  FROM servizi s
+  7  JOIN organizzazioni o
+  8      ON o.id_organizzazione = s.id_organizzazione
+  9  ORDER BY s.nome_servizio;
+
+   ID_SERVIZIO NOME_SERVIZIO               CRITICITA    NOME_ORGANIZZAZIONE     
+______________ ___________________________ ____________ _______________________ 
+             5 Assistenza Digitale         BASSA        Digital Services Srl    
+             2 Autenticazione Utenti       CRITICA      Digital Services Srl    
+             3 Continuita e Ripristino     ALTA         Digital Services Srl    
+             1 Gestione Portale Clienti    CRITICA      Digital Services Srl    
+             4 Reportistica Clienti        MEDIA        Digital Services Srl    
+
+5 rows selected. 
+
+SQL> 
+SQL> -- Q3 - Dipendenze da terze parti
+SQL> -- Mostra i fornitori esterni dai quali dipendono i servizi.
+SQL> SELECT
+  2      s.nome_servizio,
+  3      f.nome_fornitore,
+  4      sf.tipo_dipendenza,
+  5      sf.criticita_dipendenza,
+  6      sf.descrizione
+  7  FROM servizi_fornitori sf
+  8  JOIN servizi s
+  9      ON s.id_servizio = sf.id_servizio
+ 10  JOIN fornitori f
+ 11      ON f.id_fornitore = sf.id_fornitore
+ 12  ORDER BY s.nome_servizio, f.nome_fornitore;
+
+NOME_SERVIZIO               NOME_FORNITORE                            TIPO_DIPENDENZA      CRITICITA_DIPENDENZA    DESCRIZIONE                                                           
+___________________________ _________________________________________ ____________________ _______________________ _____________________________________________________________________ 
+Assistenza Digitale         Connettivita Beta - Societa Fittizia      Connettivita         MEDIA                   Canale fittizio per il servizio di assistenza.                        
+Assistenza Digitale         Messaggistica Delta - Societa Fittizia    Invio notifiche      MEDIA                   Recapito fittizio delle notifiche di assistenza.                      
+Autenticazione Utenti       Cloud Provider Alfa - Societa Fittizia    Piattaforma cloud    ALTA                    Risorse fittizie per i componenti di autenticazione.                  
+Continuita e Ripristino     Backup Gamma - Societa Fittizia           Backup gestito       CRITICA                 Supporto fittizio alle copie e al ripristino.                         
+Continuita e Ripristino     Cloud Provider Alfa - Societa Fittizia    Storage cloud        ALTA                    Destinazione fittizia secondaria delle copie.                         
+Gestione Portale Clienti    Cloud Provider Alfa - Societa Fittizia    Hosting cloud        CRITICA                 Erogazione fittizia delle risorse cloud del portale.                  
+Gestione Portale Clienti    Connettivita Beta - Societa Fittizia      Connettivita         ALTA                    Collegamento fittizio necessario alla raggiungibilita del portale.    
+
+7 rows selected. 
+
+SQL> 
+SQL> -- Q4 - Responsabili associati ad asset e servizi
+SQL> -- Le responsabilità su asset e servizi vengono riportate nello stesso risultato,
+SQL> -- mantenendo indicato il tipo di elemento.
+SQL> SELECT
+  2      r.id_responsabile,
+  3      r.nome || ' ' || r.cognome AS nominativo,
+  4      r.ruolo,
+  5      'ASSET' AS tipo_elemento,
+  6      a.id_asset AS id_elemento,
+  7      a.nome_asset AS elemento_competenza
+  8  FROM responsabili r
+  9  JOIN asset_responsabili ar
+ 10      ON ar.id_responsabile = r.id_responsabile
+ 11  JOIN asset a
+ 12      ON a.id_asset = ar.id_asset
+
+   ID_RESPONSABILE NOMINATIVO                          RUOLO                                 TIPO_ELEMENTO       ID_ELEMENTO ELEMENTO_COMPETENZA          
+__________________ ___________________________________ _____________________________________ ________________ ______________ ____________________________ 
+                 1 NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    ASSET                         1 Portale Clienti              
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             ASSET                         1 Portale Clienti              
+                 1 NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    ASSET                         2 Database Clienti             
+                 2 NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           ASSET                         2 Database Clienti             
+                 2 NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           ASSET                         3 Server Applicativo           
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             ASSET                         3 Server Applicativo           
+                 1 NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    ASSET                         4 Gateway di Autenticazione    
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             ASSET                         4 Gateway di Autenticazione    
+                 2 NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           ASSET                         5 Sistema Backup               
+                 4 NomeFittizio04 CognomeFittizio04    Responsabile continuita operativa     ASSET                         5 Sistema Backup               
+                 2 NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           ASSET                         6 Bilanciatore Web             
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             ASSET                         7 Server Reportistica          
+                 4 NomeFittizio04 CognomeFittizio04    Responsabile continuita operativa     ASSET                         8 Archivio Legacy              
+
+13 rows selected. 
+
+SQL> UNION ALL
+
+Error starting at line : 67 File @ [REDACTED_HOME]/nis2-oracle-project-work-L31/sql/05_queries.sql
+In command -
+UNION ALL
+Error report -
+Unknown Command
+
+SQL> 
+SQL> SELECT
+  2      r.id_responsabile,
+  3      r.nome || ' ' || r.cognome AS nominativo,
+  4      r.ruolo,
+  5      'SERVIZIO' AS tipo_elemento,
+  6      s.id_servizio AS id_elemento,
+  7      s.nome_servizio AS elemento_competenza
+  8  FROM responsabili r
+  9  JOIN servizi_responsabili sr
+ 10      ON sr.id_responsabile = r.id_responsabile
+ 11  JOIN servizi s
+ 12      ON s.id_servizio = sr.id_servizio
+
+   ID_RESPONSABILE NOMINATIVO                          RUOLO                                 TIPO_ELEMENTO       ID_ELEMENTO ELEMENTO_COMPETENZA         
+__________________ ___________________________________ _____________________________________ ________________ ______________ ___________________________ 
+                 1 NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    SERVIZIO                      1 Gestione Portale Clienti    
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             SERVIZIO                      1 Gestione Portale Clienti    
+                 1 NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    SERVIZIO                      2 Autenticazione Utenti       
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             SERVIZIO                      2 Autenticazione Utenti       
+                 2 NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           SERVIZIO                      3 Continuita e Ripristino     
+                 4 NomeFittizio04 CognomeFittizio04    Responsabile continuita operativa     SERVIZIO                      3 Continuita e Ripristino     
+                 3 NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             SERVIZIO                      4 Reportistica Clienti        
+                 5 NomeFittizio05 CognomeFittizio05    Responsabile supporto utenti          SERVIZIO                      5 Assistenza Digitale         
+
+8 rows selected. 
+
+SQL> ORDER BY nominativo, tipo_elemento, elemento_competenza;
+
+Error starting at line : 82 File @ [REDACTED_HOME]/nis2-oracle-project-work-L31/sql/05_queries.sql
+In command -
+ORDER BY nominativo, tipo_elemento, elemento_competenza
+Error report -
+Unknown Command
+
+SQL> 
+SQL> -- Q5 - Punti di contatto ed elementi di competenza
+SQL> -- Collega i contatti dei responsabili agli asset e ai servizi di competenza.
+SQL> SELECT
+  2      r.nome || ' ' || r.cognome AS nominativo,
+  3      r.ruolo,
+  4      pc.funzione,
+  5      pc.priorita_contatto,
+  6      pc.email,
+  7      pc.telefono,
+  8      'ASSET' AS tipo_elemento,
+  9      a.nome_asset AS elemento_competenza
+ 10  FROM punti_contatto pc
+ 11  JOIN responsabili r
+ 12      ON r.id_responsabile = pc.id_responsabile
+ 13  JOIN asset_responsabili ar
+ 14      ON ar.id_responsabile = r.id_responsabile
+ 15  JOIN asset a
+ 16      ON a.id_asset = ar.id_asset
+
+NOMINATIVO                          RUOLO                                 FUNZIONE                          PRIORITA_CONTATTO EMAIL                                                    TELEFONO           TIPO_ELEMENTO    ELEMENTO_COMPETENZA          
+___________________________________ _____________________________________ ______________________________ ____________________ ________________________________________________________ __________________ ________________ ____________________________ 
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             1 sicurezza.p01@digital-services.example.invalid           +39 000 0000001    ASSET            Portale Clienti              
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             2 sicurezza.backup.p01@digital-services.example.invalid                       ASSET            Portale Clienti              
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    ASSET            Portale Clienti              
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             1 sicurezza.p01@digital-services.example.invalid           +39 000 0000001    ASSET            Database Clienti             
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             2 sicurezza.backup.p01@digital-services.example.invalid                       ASSET            Database Clienti             
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Gestione infrastrutture                           1                                                          +39 000 0000002    ASSET            Database Clienti             
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Reperibilita infrastrutture                       1 reperibilita.p02@digital-services.example.invalid                           ASSET            Database Clienti             
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Gestione infrastrutture                           1                                                          +39 000 0000002    ASSET            Server Applicativo           
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Reperibilita infrastrutture                       1 reperibilita.p02@digital-services.example.invalid                           ASSET            Server Applicativo           
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    ASSET            Server Applicativo           
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             1 sicurezza.p01@digital-services.example.invalid           +39 000 0000001    ASSET            Gateway di Autenticazione    
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             2 sicurezza.backup.p01@digital-services.example.invalid                       ASSET            Gateway di Autenticazione    
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    ASSET            Gateway di Autenticazione    
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Gestione infrastrutture                           1                                                          +39 000 0000002    ASSET            Sistema Backup               
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Reperibilita infrastrutture                       1 reperibilita.p02@digital-services.example.invalid                           ASSET            Sistema Backup               
+NomeFittizio04 CognomeFittizio04    Responsabile continuita operativa     Continuita operativa                              1 continuita.p04@digital-services.example.invalid          +39 000 0000004    ASSET            Sistema Backup               
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Gestione infrastrutture                           1                                                          +39 000 0000002    ASSET            Bilanciatore Web             
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Reperibilita infrastrutture                       1 reperibilita.p02@digital-services.example.invalid                           ASSET            Bilanciatore Web             
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    ASSET            Server Reportistica          
+NomeFittizio04 CognomeFittizio04    Responsabile continuita operativa     Continuita operativa                              1 continuita.p04@digital-services.example.invalid          +39 000 0000004    ASSET            Archivio Legacy              
+
+20 rows selected. 
+
+SQL> UNION ALL
+
+Error starting at line : 103 File @ [REDACTED_HOME]/nis2-oracle-project-work-L31/sql/05_queries.sql
+In command -
+UNION ALL
+Error report -
+Unknown Command
+
+SQL> 
+SQL> SELECT
+  2      r.nome || ' ' || r.cognome AS nominativo,
+  3      r.ruolo,
+  4      pc.funzione,
+  5      pc.priorita_contatto,
+  6      pc.email,
+  7      pc.telefono,
+  8      'SERVIZIO' AS tipo_elemento,
+  9      s.nome_servizio AS elemento_competenza
+ 10  FROM punti_contatto pc
+ 11  JOIN responsabili r
+ 12      ON r.id_responsabile = pc.id_responsabile
+ 13  JOIN servizi_responsabili sr
+ 14      ON sr.id_responsabile = r.id_responsabile
+ 15  JOIN servizi s
+ 16      ON s.id_servizio = sr.id_servizio
+
+NOMINATIVO                          RUOLO                                 FUNZIONE                          PRIORITA_CONTATTO EMAIL                                                    TELEFONO           TIPO_ELEMENTO    ELEMENTO_COMPETENZA         
+___________________________________ _____________________________________ ______________________________ ____________________ ________________________________________________________ __________________ ________________ ___________________________ 
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             1 sicurezza.p01@digital-services.example.invalid           +39 000 0000001    SERVIZIO         Gestione Portale Clienti    
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             1 sicurezza.p01@digital-services.example.invalid           +39 000 0000001    SERVIZIO         Autenticazione Utenti       
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             2 sicurezza.backup.p01@digital-services.example.invalid                       SERVIZIO         Gestione Portale Clienti    
+NomeFittizio01 CognomeFittizio01    Responsabile sicurezza informatica    Sicurezza informatica                             2 sicurezza.backup.p01@digital-services.example.invalid                       SERVIZIO         Autenticazione Utenti       
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Gestione infrastrutture                           1                                                          +39 000 0000002    SERVIZIO         Continuita e Ripristino     
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    SERVIZIO         Gestione Portale Clienti    
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    SERVIZIO         Autenticazione Utenti       
+NomeFittizio03 CognomeFittizio03    Responsabile applicazioni             Gestione applicazioni                             1 applicazioni.p03@digital-services.example.invalid        +39 000 0000003    SERVIZIO         Reportistica Clienti        
+NomeFittizio04 CognomeFittizio04    Responsabile continuita operativa     Continuita operativa                              1 continuita.p04@digital-services.example.invalid          +39 000 0000004    SERVIZIO         Continuita e Ripristino     
+NomeFittizio05 CognomeFittizio05    Responsabile supporto utenti          Supporto utenti                                   1 supporto.p05@digital-services.example.invalid            +39 000 0000005    SERVIZIO         Assistenza Digitale         
+NomeFittizio02 CognomeFittizio02    Responsabile infrastrutture           Reperibilita infrastrutture                       1 reperibilita.p02@digital-services.example.invalid                           SERVIZIO         Continuita e Ripristino     
+
+11 rows selected. 
+
+SQL> ORDER BY nominativo, funzione, priorita_contatto, tipo_elemento, elemento_competenza;
+
+Error starting at line : 122 File @ [REDACTED_HOME]/nis2-oracle-project-work-L31/sql/05_queries.sql
+In command -
+ORDER BY nominativo, funzione, priorita_contatto, tipo_elemento, elemento_competenza
+Error report -
+Unknown Command
+
+SP2-0044: For a list of known commands enter HELP
+and to leave enter EXIT.
+SQL> 
+SQL> -- Q6 - Riepilogo di uno specifico servizio
+SQL> -- Per il servizio scelto vengono raccolti separatamente asset, fornitori
+SQL> -- e responsabili associati.
+SQL> -- Nel dataset di esempio id_servizio = 1 corrisponde a Gestione Portale Clienti.
+SQL> SELECT
+  2      s.id_servizio,
+  3      s.nome_servizio,
+  4      s.criticita,
+  5      (
+  6          SELECT LISTAGG(a.nome_asset, ', ')
+  7                     WITHIN GROUP (ORDER BY a.nome_asset)
+  8          FROM asset_servizi ass
+  9          JOIN asset a
+ 10              ON a.id_asset = ass.id_asset
+ 11          WHERE ass.id_servizio = s.id_servizio
+ 12      ) AS asset_associati,
+ 13      (
+ 14          SELECT LISTAGG(f.nome_fornitore, ', ')
+ 15                     WITHIN GROUP (ORDER BY f.nome_fornitore)
+ 16          FROM servizi_fornitori sf
+ 17          JOIN fornitori f
+ 18              ON f.id_fornitore = sf.id_fornitore
+ 19          WHERE sf.id_servizio = s.id_servizio
+ 20      ) AS fornitori_associati,
+ 21      (
+ 22          SELECT LISTAGG(r.nome || ' ' || r.cognome, ', ')
+ 23                     WITHIN GROUP (ORDER BY r.cognome, r.nome)
+ 24          FROM servizi_responsabili sr
+ 25          JOIN responsabili r
+ 26              ON r.id_responsabile = sr.id_responsabile
+ 27          WHERE sr.id_servizio = s.id_servizio
+ 28      ) AS responsabili_associati
+ 29  FROM servizi s
+ 30  WHERE s.id_servizio = 1;
+
+   ID_SERVIZIO NOME_SERVIZIO               CRITICITA    ASSET_ASSOCIATI                                                                                       FORNITORI_ASSOCIATI                                                             RESPONSABILI_ASSOCIATI                                                
+______________ ___________________________ ____________ _____________________________________________________________________________________________________ _______________________________________________________________________________ _____________________________________________________________________ 
+             1 Gestione Portale Clienti    CRITICA      Bilanciatore Web, Database Clienti, Gateway di Autenticazione, Portale Clienti, Server Applicativo    Cloud Provider Alfa - Societa Fittizia, Connettivita Beta - Societa Fittizia    NomeFittizio01 CognomeFittizio01, NomeFittizio03 CognomeFittizio03    
+
+1 row selected. 
+
+SQL> 
+SQL> -- Q7 - Storico di un asset
+SQL> -- Mostra le versioni del Portale Clienti (id_asset = 1).
+SQL> SELECT
+  2      sa.id_asset,
+  3      sa.numero_versione,
+  4      sa.data_inizio_validita,
+  5      sa.data_fine_validita,
+  6      sa.nome_asset,
+  7      sa.tipo_asset,
+  8      sa.criticita,
+  9      sa.stato,
+ 10      sa.tipo_modifica,
+ 11      sa.descrizione_modifica
+ 12  FROM storico_asset sa
+ 13  WHERE sa.id_asset = 1
+ 14  ORDER BY sa.numero_versione;
+
+   ID_ASSET    NUMERO_VERSIONE DATA_INIZIO_VALIDITA    DATA_FINE_VALIDITA    NOME_ASSET                TIPO_ASSET          CRITICITA    STATO       TIPO_MODIFICA    DESCRIZIONE_MODIFICA                                     
+___________ __________________ _______________________ _____________________ _________________________ ___________________ ____________ ___________ ________________ ________________________________________________________ 
+          1                  1 01-JAN-25               31-MAY-25             Portale Clienti Legacy    Applicazione web    BASSA        INATTIVO    INSERIMENTO      Prima fotografia fittizia del portale.                   
+          1                  2 01-JUN-25               28-FEB-26             Portale Clienti           Applicazione web    ALTA         ATTIVO      ATTIVAZIONE      Attivazione fittizia e rivalutazione della criticita.    
+          1                  3 01-MAR-26                                     Portale Clienti           Applicazione web    CRITICA      ATTIVO      RIVALUTAZIONE    Classificazione fittizia aggiornata a CRITICA.           
+
+3 rows selected. 
+
+SQL> 
+SQL> -- Q8 - Storico di un servizio
+SQL> -- Mostra le versioni di Gestione Portale Clienti (id_servizio = 1).
+SQL> SELECT
+  2      ss.id_servizio,
+  3      ss.numero_versione,
+  4      ss.data_inizio_validita,
+  5      ss.data_fine_validita,
+  6      ss.nome_servizio,
+  7      ss.criticita,
+  8      ss.tipo_modifica,
+  9      ss.descrizione_modifica
+ 10  FROM storico_servizi ss
+ 11  WHERE ss.id_servizio = 1
+ 12  ORDER BY ss.numero_versione;
+
+   ID_SERVIZIO    NUMERO_VERSIONE DATA_INIZIO_VALIDITA    DATA_FINE_VALIDITA    NOME_SERVIZIO                  CRITICITA    TIPO_MODIFICA    DESCRIZIONE_MODIFICA                              
+______________ __________________ _______________________ _____________________ ______________________________ ____________ ________________ _________________________________________________ 
+             1                  1 01-JAN-25               30-JUN-25             Portale Informativo Clienti    MEDIA        INSERIMENTO      Prima fotografia fittizia del servizio.           
+             1                  2 01-JUL-25               28-FEB-26             Gestione Portale Clienti       ALTA         AGGIORNAMENTO    Ampliamento fittizio del servizio.                
+             1                  3 01-MAR-26                                     Gestione Portale Clienti       CRITICA      RIVALUTAZIONE    Classificazione fittizia aggiornata a CRITICA.    
+
+3 rows selected. 
+
+SQL> 
+SQL> -- Q9 - Dipendenze tecniche tra asset
+SQL> -- Mostra per ogni dipendenza l'asset origine e l'asset richiesto.
+SQL> SELECT
+  2      d.id_dipendenza,
+  3      ao.id_asset AS id_asset_origine,
+  4      ao.nome_asset AS asset_origine,
+  5      ar.id_asset AS id_asset_richiesto,
+  6      ar.nome_asset AS asset_richiesto,
+  7      d.tipo_dipendenza,
+  8      d.descrizione
+  9  FROM dipendenze d
+ 10  JOIN asset ao
+ 11      ON ao.id_asset = d.id_asset_origine
+ 12  JOIN asset ar
+ 13      ON ar.id_asset = d.id_asset_richiesto
+ 14  ORDER BY ao.nome_asset, ar.nome_asset;
+
+   ID_DIPENDENZA    ID_ASSET_ORIGINE ASSET_ORIGINE                   ID_ASSET_RICHIESTO ASSET_RICHIESTO              TIPO_DIPENDENZA              DESCRIZIONE                                                     
+________________ ___________________ ____________________________ _____________________ ____________________________ ____________________________ _______________________________________________________________ 
+               8                   6 Bilanciatore Web                                 3 Server Applicativo           Instradamento                Il bilanciatore dipende dal server applicativo.                 
+               6                   4 Gateway di Autenticazione                        2 Database Clienti             Consultazione credenziali    Il gateway dipende dal database clienti.                        
+               3                   1 Portale Clienti                                  6 Bilanciatore Web             Bilanciamento                Il portale dipende dal bilanciatore web.                        
+               2                   1 Portale Clienti                                  4 Gateway di Autenticazione    Autenticazione               Il portale dipende dal gateway di autenticazione.               
+               1                   1 Portale Clienti                                  3 Server Applicativo           Esecuzione applicativa       Il portale dipende dal server applicativo.                      
+               4                   3 Server Applicativo                               2 Database Clienti             Persistenza dati             Il server applicativo dipende dal database clienti.             
+               5                   3 Server Applicativo                               4 Gateway di Autenticazione    Verifica identita            Il server applicativo dipende dal gateway di autenticazione.    
+               9                   7 Server Reportistica                              2 Database Clienti             Lettura dati                 Il server reportistica dipende dal database clienti.            
+              10                   7 Server Reportistica                              3 Server Applicativo           Elaborazione report          Il server reportistica dipende dal server applicativo.          
+               7                   5 Sistema Backup                                   2 Database Clienti             Copia dati                   Il sistema backup dipende dal database clienti.                 
+
+10 rows selected. 
+
+SQL> PROMPT ===== FINE 05_queries.sql =====
+===== FINE 05_queries.sql =====
+SQL> SPOOL OFF
