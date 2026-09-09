@@ -3,8 +3,12 @@
 -- Query di interrogazione
 -- File: 05_queries.sql
 --
--- Il collaudo su Oracle verrà eseguito in una fase successiva.
+-- Lo script è stato verificato su Oracle Database 26ai con Oracle SQLcl.
 -- ============================================================
+
+-- Mantiene valide le istruzioni multilinea anche in presenza di righe vuote
+-- quando lo script viene eseguito con SQLcl o SQL*Plus.
+SET SQLBLANKLINES ON
 
 -- Q1 - Asset critici
 -- Elenca gli asset con criticità CRITICA e la relativa organizzazione.
@@ -63,9 +67,7 @@ JOIN asset_responsabili ar
     ON ar.id_responsabile = r.id_responsabile
 JOIN asset a
     ON a.id_asset = ar.id_asset
-
 UNION ALL
-
 SELECT
     r.id_responsabile,
     r.nome || ' ' || r.cognome AS nominativo,
@@ -78,7 +80,6 @@ JOIN servizi_responsabili sr
     ON sr.id_responsabile = r.id_responsabile
 JOIN servizi s
     ON s.id_servizio = sr.id_servizio
-
 ORDER BY nominativo, tipo_elemento, elemento_competenza;
 
 -- Q5 - Punti di contatto ed elementi di competenza
@@ -99,9 +100,7 @@ JOIN asset_responsabili ar
     ON ar.id_responsabile = r.id_responsabile
 JOIN asset a
     ON a.id_asset = ar.id_asset
-
 UNION ALL
-
 SELECT
     r.nome || ' ' || r.cognome AS nominativo,
     r.ruolo,
@@ -118,7 +117,6 @@ JOIN servizi_responsabili sr
     ON sr.id_responsabile = r.id_responsabile
 JOIN servizi s
     ON s.id_servizio = sr.id_servizio
-
 ORDER BY nominativo, funzione, priorita_contatto, tipo_elemento, elemento_competenza;
 
 -- Q6 - Riepilogo di uno specifico servizio
