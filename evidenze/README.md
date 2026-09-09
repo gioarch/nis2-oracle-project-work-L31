@@ -10,6 +10,10 @@ Durante il collaudo di `05_queries.sql` è stato riprodotto un problema di esecu
 
 I test contenuti in `06_tests.sql` hanno completato i gruppi T01–T09 senza esiti KO.
 
+Il test T08 confronta la cardinalità ottenuta dalle query Q1–Q9 con i valori attesi del dataset dimostrativo.
+
+Per evitare di pubblicare identificativi dell'ambiente di prova, il log di verifica del dataset non riporta il nome dello schema Oracle; conserva la versione del database, il timestamp della verifica e i conteggi dei dati.
+
 L'esportazione finale `export_nis2_demo_26ai.csv` contiene 5 record e 9 colonne ed è priva di prompt e messaggi di feedback SQLcl.
 
 Il file `SHA256SUMS.txt` contiene le impronte SHA-256 delle evidenze tecniche conservate in questa directory.

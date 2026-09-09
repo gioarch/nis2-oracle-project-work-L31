@@ -10,6 +10,7 @@
 
 SET PAGESIZE 100
 SET LINESIZE 220
+SET SQLBLANKLINES ON
 
 PROMPT === T01 - Conteggi attesi del dataset dimostrativo ===
 SELECT 'organizzazioni' AS oggetto, COUNT(*) AS valore_rilevato, 1 AS valore_atteso,
@@ -168,45 +169,154 @@ FROM (
        OR ss.criticita <> s.criticita
 );
 
-PROMPT === T08 - Risultati significativi delle query principali ===
-SELECT requisito, righe_rilevate,
-       CASE WHEN righe_rilevate > 0 THEN 'OK' ELSE 'KO' END AS esito
+PROMPT === T08 - Cardinalita attese delle query Q1-Q9 ===
+-- Riproduce le relazioni e i filtri utilizzati dalle query Q1-Q9
+-- e confronta la cardinalita ottenuta con quella attesa per il dataset
+-- dimostrativo. Gli ORDER BY non vengono ripetuti perche non modificano
+-- il numero di righe restituito.
+
+SELECT
+    requisito,
+    righe_rilevate,
+    righe_attese,
+    CASE
+        WHEN righe_rilevate = righe_attese THEN 'OK'
+        ELSE 'KO'
+    END AS esito
 FROM (
-    SELECT 'Q1 asset critici' AS requisito, COUNT(*) AS righe_rilevate
-    FROM asset WHERE criticita = 'CRITICA'
+    SELECT
+        'Q1 asset critici' AS requisito,
+        COUNT(*) AS righe_rilevate,
+        3 AS righe_attese
+    FROM asset a
+    JOIN organizzazioni o
+        ON o.id_organizzazione = a.id_organizzazione
+    WHERE a.criticita = 'CRITICA'
+
     UNION ALL
-    SELECT 'Q2 servizi erogati', COUNT(*) FROM servizi
+
+    SELECT
+        'Q2 servizi erogati',
+        COUNT(*),
+        5
+    FROM servizi s
+    JOIN organizzazioni o
+        ON o.id_organizzazione = s.id_organizzazione
+
     UNION ALL
-    SELECT 'Q3 dipendenze da terze parti', COUNT(*) FROM servizi_fornitori
+
+    SELECT
+        'Q3 dipendenze da terze parti',
+        COUNT(*),
+        7
+    FROM servizi_fornitori sf
+    JOIN servizi s
+        ON s.id_servizio = sf.id_servizio
+    JOIN fornitori f
+        ON f.id_fornitore = sf.id_fornitore
+
     UNION ALL
-    SELECT 'Q4 responsabili',
-           (SELECT COUNT(*) FROM asset_responsabili)
-         + (SELECT COUNT(*) FROM servizi_responsabili)
-    FROM dual
+
+    SELECT
+        'Q4 responsabili',
+        COUNT(*),
+        21
+    FROM (
+        SELECT
+            r.id_responsabile,
+            'ASSET' AS tipo_elemento,
+            a.id_asset AS id_elemento
+        FROM responsabili r
+        JOIN asset_responsabili ar
+            ON ar.id_responsabile = r.id_responsabile
+        JOIN asset a
+            ON a.id_asset = ar.id_asset
+
+        UNION ALL
+
+        SELECT
+            r.id_responsabile,
+            'SERVIZIO' AS tipo_elemento,
+            s.id_servizio AS id_elemento
+        FROM responsabili r
+        JOIN servizi_responsabili sr
+            ON sr.id_responsabile = r.id_responsabile
+        JOIN servizi s
+            ON s.id_servizio = sr.id_servizio
+    )
+
     UNION ALL
-    SELECT 'Q5 punti di contatto', COUNT(*) FROM punti_contatto
+
+    SELECT
+        'Q5 punti di contatto',
+        COUNT(*),
+        31
+    FROM (
+        SELECT
+            pc.id_punto_contatto,
+            'ASSET' AS tipo_elemento,
+            a.id_asset AS id_elemento
+        FROM punti_contatto pc
+        JOIN responsabili r
+            ON r.id_responsabile = pc.id_responsabile
+        JOIN asset_responsabili ar
+            ON ar.id_responsabile = r.id_responsabile
+        JOIN asset a
+            ON a.id_asset = ar.id_asset
+
+        UNION ALL
+
+        SELECT
+            pc.id_punto_contatto,
+            'SERVIZIO' AS tipo_elemento,
+            s.id_servizio AS id_elemento
+        FROM punti_contatto pc
+        JOIN responsabili r
+            ON r.id_responsabile = pc.id_responsabile
+        JOIN servizi_responsabili sr
+            ON sr.id_responsabile = r.id_responsabile
+        JOIN servizi s
+            ON s.id_servizio = sr.id_servizio
+    )
+
     UNION ALL
-    SELECT 'Q6 riepilogo servizio', COUNT(*)
+
+    SELECT
+        'Q6 riepilogo servizio',
+        COUNT(*),
+        1
     FROM servizi s
     WHERE s.id_servizio = 1
-      AND EXISTS (
-          SELECT 1 FROM asset_servizi ass
-          WHERE ass.id_servizio = s.id_servizio
-      )
-      AND EXISTS (
-          SELECT 1 FROM servizi_fornitori sf
-          WHERE sf.id_servizio = s.id_servizio
-      )
-      AND EXISTS (
-          SELECT 1 FROM servizi_responsabili sr
-          WHERE sr.id_servizio = s.id_servizio
-      )
+
     UNION ALL
-    SELECT 'Q7 storico asset', COUNT(*) FROM storico_asset WHERE id_asset = 1
+
+    SELECT
+        'Q7 storico asset',
+        COUNT(*),
+        3
+    FROM storico_asset sa
+    WHERE sa.id_asset = 1
+
     UNION ALL
-    SELECT 'Q8 storico servizi', COUNT(*) FROM storico_servizi WHERE id_servizio = 1
+
+    SELECT
+        'Q8 storico servizi',
+        COUNT(*),
+        3
+    FROM storico_servizi ss
+    WHERE ss.id_servizio = 1
+
     UNION ALL
-    SELECT 'Q9 dipendenze tecniche', COUNT(*) FROM dipendenze
+
+    SELECT
+        'Q9 dipendenze tecniche',
+        COUNT(*),
+        10
+    FROM dipendenze d
+    JOIN asset ao
+        ON ao.id_asset = d.id_asset_origine
+    JOIN asset ar
+        ON ar.id_asset = d.id_asset_richiesto
 )
 ORDER BY requisito;
 

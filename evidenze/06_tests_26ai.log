@@ -1,15 +1,30 @@
-SQL> PROMPT ===== INIZIO 06_tests.sql =====
-===== INIZIO 06_tests.sql =====
-SQL> SELECT CURRENT_TIMESTAMP AS data_test
-  2  FROM dual;
+SQL> 
+SQL> PROMPT ===== INIZIO 06_tests.sql C8 =====
+===== INIZIO 06_tests.sql C8 =====
+SQL> 
+SQL> SELECT banner_full
+  2  FROM v$version
+  3  WHERE banner_full LIKE 'Oracle%';
 
-DATA_TEST                                      
-______________________________________________ 
-10-SEP-26 12.35.02.991381000 AM EUROPE/ROME    
+BANNER_FULL                                                                                              
+________________________________________________________________________________________________________ 
+Oracle AI Database 26ai EE Extreme Perf Release 23.26.0.0.0 - for Oracle Cloud and Engineered Systems    
+Version 23.26.0.0.0                                                                                      
 
 1 row selected. 
 
-SQL> @sql/06_tests.sql
+SQL> 
+SQL> SELECT CURRENT_TIMESTAMP AS data_verifica
+  2  FROM dual;
+
+DATA_VERIFICA                                  
+______________________________________________ 
+10-SEP-26 01.42.34.134381000 AM EUROPE/ROME    
+
+1 row selected. 
+
+SQL> 
+SQL> @[REDACTED_HOME]/nis2-oracle-project-work-L31/sql/06_tests.sql
 SQL> -- ============================================================
 SQL> -- Project Work L-31
 SQL> -- Test di controllo
@@ -17,11 +32,12 @@ SQL> -- File: 06_tests.sql
 SQL> --
 SQL> -- Eseguire dopo 01_schema.sql, 02_indexes.sql, 03_dataset.sql e 04_views.sql.
 SQL> -- I test sono di sola lettura e non modificano i dati.
-SQL> -- Il collaudo su Oracle verrà eseguito in una fase successiva.
+SQL> -- Lo script è stato verificato su Oracle Database 26ai con Oracle SQLcl.
 SQL> -- ============================================================
 SQL> 
 SQL> SET PAGESIZE 100
 SQL> SET LINESIZE 220
+SQL> SET SQLBLANKLINES ON
 SQL> 
 SQL> PROMPT === T01 - Conteggi attesi del dataset dimostrativo ===
 === T01 - Conteggi attesi del dataset dimostrativo ===
@@ -256,60 +272,169 @@ servizi                0 OK
 2 rows selected. 
 
 SQL> 
-SQL> PROMPT === T08 - Risultati significativi delle query principali ===
-=== T08 - Risultati significativi delle query principali ===
-SQL> SELECT requisito, righe_rilevate,
-  2         CASE WHEN righe_rilevate > 0 THEN 'OK' ELSE 'KO' END AS esito
-  3  FROM (
-  4      SELECT 'Q1 asset critici' AS requisito, COUNT(*) AS righe_rilevate
-  5      FROM asset WHERE criticita = 'CRITICA'
-  6      UNION ALL
-  7      SELECT 'Q2 servizi erogati', COUNT(*) FROM servizi
-  8      UNION ALL
-  9      SELECT 'Q3 dipendenze da terze parti', COUNT(*) FROM servizi_fornitori
- 10      UNION ALL
- 11      SELECT 'Q4 responsabili',
- 12             (SELECT COUNT(*) FROM asset_responsabili)
- 13           + (SELECT COUNT(*) FROM servizi_responsabili)
- 14      FROM dual
- 15      UNION ALL
- 16      SELECT 'Q5 punti di contatto', COUNT(*) FROM punti_contatto
- 17      UNION ALL
- 18      SELECT 'Q6 riepilogo servizio', COUNT(*)
- 19      FROM servizi s
- 20      WHERE s.id_servizio = 1
- 21        AND EXISTS (
- 22            SELECT 1 FROM asset_servizi ass
- 23            WHERE ass.id_servizio = s.id_servizio
- 24        )
- 25        AND EXISTS (
- 26            SELECT 1 FROM servizi_fornitori sf
- 27            WHERE sf.id_servizio = s.id_servizio
- 28        )
- 29        AND EXISTS (
- 30            SELECT 1 FROM servizi_responsabili sr
- 31            WHERE sr.id_servizio = s.id_servizio
- 32        )
- 33      UNION ALL
- 34      SELECT 'Q7 storico asset', COUNT(*) FROM storico_asset WHERE id_asset = 1
- 35      UNION ALL
- 36      SELECT 'Q8 storico servizi', COUNT(*) FROM storico_servizi WHERE id_servizio = 1
- 37      UNION ALL
- 38      SELECT 'Q9 dipendenze tecniche', COUNT(*) FROM dipendenze
- 39  )
- 40  ORDER BY requisito;
+SQL> PROMPT === T08 - Cardinalita attese delle query Q1-Q9 ===
+=== T08 - Cardinalita attese delle query Q1-Q9 ===
+SQL> -- Riproduce le relazioni e i filtri utilizzati dalle query Q1-Q9
+SQL> -- e confronta la cardinalita ottenuta con quella attesa per il dataset
+SQL> -- dimostrativo. Gli ORDER BY non vengono ripetuti perche non modificano
+SQL> -- il numero di righe restituito.
+SQL> 
+SQL> SELECT
+  2      requisito,
+  3      righe_rilevate,
+  4      righe_attese,
+  5      CASE
+  6          WHEN righe_rilevate = righe_attese THEN 'OK'
+  7          ELSE 'KO'
+  8      END AS esito
+  9  FROM (
+ 10      SELECT
+ 11          'Q1 asset critici' AS requisito,
+ 12          COUNT(*) AS righe_rilevate,
+ 13          3 AS righe_attese
+ 14      FROM asset a
+ 15      JOIN organizzazioni o
+ 16          ON o.id_organizzazione = a.id_organizzazione
+ 17      WHERE a.criticita = 'CRITICA'
+ 18  
+ 19      UNION ALL
+ 20  
+ 21      SELECT
+ 22          'Q2 servizi erogati',
+ 23          COUNT(*),
+ 24          5
+ 25      FROM servizi s
+ 26      JOIN organizzazioni o
+ 27          ON o.id_organizzazione = s.id_organizzazione
+ 28  
+ 29      UNION ALL
+ 30  
+ 31      SELECT
+ 32          'Q3 dipendenze da terze parti',
+ 33          COUNT(*),
+ 34          7
+ 35      FROM servizi_fornitori sf
+ 36      JOIN servizi s
+ 37          ON s.id_servizio = sf.id_servizio
+ 38      JOIN fornitori f
+ 39          ON f.id_fornitore = sf.id_fornitore
+ 40  
+ 41      UNION ALL
+ 42  
+ 43      SELECT
+ 44          'Q4 responsabili',
+ 45          COUNT(*),
+ 46          21
+ 47      FROM (
+ 48          SELECT
+ 49              r.id_responsabile,
+ 50              'ASSET' AS tipo_elemento,
+ 51              a.id_asset AS id_elemento
+ 52          FROM responsabili r
+ 53          JOIN asset_responsabili ar
+ 54              ON ar.id_responsabile = r.id_responsabile
+ 55          JOIN asset a
+ 56              ON a.id_asset = ar.id_asset
+ 57  
+ 58          UNION ALL
+ 59  
+ 60          SELECT
+ 61              r.id_responsabile,
+ 62              'SERVIZIO' AS tipo_elemento,
+ 63              s.id_servizio AS id_elemento
+ 64          FROM responsabili r
+ 65          JOIN servizi_responsabili sr
+ 66              ON sr.id_responsabile = r.id_responsabile
+ 67          JOIN servizi s
+ 68              ON s.id_servizio = sr.id_servizio
+ 69      )
+ 70  
+ 71      UNION ALL
+ 72  
+ 73      SELECT
+ 74          'Q5 punti di contatto',
+ 75          COUNT(*),
+ 76          31
+ 77      FROM (
+ 78          SELECT
+ 79              pc.id_punto_contatto,
+ 80              'ASSET' AS tipo_elemento,
+ 81              a.id_asset AS id_elemento
+ 82          FROM punti_contatto pc
+ 83          JOIN responsabili r
+ 84              ON r.id_responsabile = pc.id_responsabile
+ 85          JOIN asset_responsabili ar
+ 86              ON ar.id_responsabile = r.id_responsabile
+ 87          JOIN asset a
+ 88              ON a.id_asset = ar.id_asset
+ 89  
+ 90          UNION ALL
+ 91  
+ 92          SELECT
+ 93              pc.id_punto_contatto,
+ 94              'SERVIZIO' AS tipo_elemento,
+ 95              s.id_servizio AS id_elemento
+ 96          FROM punti_contatto pc
+ 97          JOIN responsabili r
+ 98              ON r.id_responsabile = pc.id_responsabile
+ 99          JOIN servizi_responsabili sr
+100              ON sr.id_responsabile = r.id_responsabile
+101          JOIN servizi s
+102              ON s.id_servizio = sr.id_servizio
+103      )
+104  
+105      UNION ALL
+106  
+107      SELECT
+108          'Q6 riepilogo servizio',
+109          COUNT(*),
+110          1
+111      FROM servizi s
+112      WHERE s.id_servizio = 1
+113  
+114      UNION ALL
+115  
+116      SELECT
+117          'Q7 storico asset',
+118          COUNT(*),
+119          3
+120      FROM storico_asset sa
+121      WHERE sa.id_asset = 1
+122  
+123      UNION ALL
+124  
+125      SELECT
+126          'Q8 storico servizi',
+127          COUNT(*),
+128          3
+129      FROM storico_servizi ss
+130      WHERE ss.id_servizio = 1
+131  
+132      UNION ALL
+133  
+134      SELECT
+135          'Q9 dipendenze tecniche',
+136          COUNT(*),
+137          10
+138      FROM dipendenze d
+139      JOIN asset ao
+140          ON ao.id_asset = d.id_asset_origine
+141      JOIN asset ar
+142          ON ar.id_asset = d.id_asset_richiesto
+143  )
+144  ORDER BY requisito;
 
-REQUISITO                          RIGHE_RILEVATE ESITO    
-_______________________________ _________________ ________ 
-Q1 asset critici                                3 OK       
-Q2 servizi erogati                              5 OK       
-Q3 dipendenze da terze parti                    7 OK       
-Q4 responsabili                                21 OK       
-Q5 punti di contatto                            7 OK       
-Q6 riepilogo servizio                           1 OK       
-Q7 storico asset                                3 OK       
-Q8 storico servizi                              3 OK       
-Q9 dipendenze tecniche                         10 OK       
+REQUISITO                          RIGHE_RILEVATE    RIGHE_ATTESE ESITO    
+_______________________________ _________________ _______________ ________ 
+Q1 asset critici                                3               3 OK       
+Q2 servizi erogati                              5               5 OK       
+Q3 dipendenze da terze parti                    7               7 OK       
+Q4 responsabili                                21              21 OK       
+Q5 punti di contatto                           31              31 OK       
+Q6 riepilogo servizio                           1               1 OK       
+Q7 storico asset                                3               3 OK       
+Q8 storico servizi                              3               3 OK       
+Q9 dipendenze tecniche                         10              10 OK       
 
 9 rows selected. 
 
@@ -337,6 +462,7 @@ _____________ ________________ ___________________ ________
 SQL> 
 SQL> PROMPT === Fine test: verificare che ogni colonna ESITO riporti OK ===
 === Fine test: verificare che ogni colonna ESITO riporti OK ===
-SQL> PROMPT ===== FINE 06_tests.sql =====
-===== FINE 06_tests.sql =====
+SQL> 
+SQL> PROMPT ===== FINE 06_tests.sql C8 =====
+===== FINE 06_tests.sql C8 =====
 SQL> SPOOL OFF

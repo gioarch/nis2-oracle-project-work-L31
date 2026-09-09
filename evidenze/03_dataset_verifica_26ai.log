@@ -1,7 +1,7 @@
+SQL> 
 SQL> PROMPT ===== VERIFICA DATASET =====
 ===== VERIFICA DATASET =====
-SQL> SHOW USER
-USER is "[REDACTED]"
+SQL> 
 SQL> SELECT banner_full
   2  FROM v$version
   3  WHERE banner_full LIKE 'Oracle%';
@@ -13,15 +13,17 @@ Version 23.26.0.0.0
 
 1 row selected. 
 
+SQL> 
 SQL> SELECT CURRENT_TIMESTAMP AS data_verifica
   2  FROM dual;
 
 DATA_VERIFICA                                  
 ______________________________________________ 
-10-SEP-26 12.07.00.612383000 AM EUROPE/ROME    
+10-SEP-26 01.36.53.895914000 AM EUROPE/ROME    
 
 1 row selected. 
 
+SQL> 
 SQL> SELECT 'ORGANIZZAZIONI' tabella, COUNT(*) righe FROM organizzazioni
   2  UNION ALL
   3  SELECT 'FORNITORI', COUNT(*) FROM fornitori
@@ -67,6 +69,7 @@ STORICO_SERVIZI                7
 
 13 rows selected. 
 
+SQL> 
 SQL> SELECT
   2        (SELECT COUNT(*) FROM organizzazioni)
   3      + (SELECT COUNT(*) FROM fornitori)
@@ -90,6 +93,7 @@ _______________
 
 1 row selected. 
 
+SQL> 
 SQL> PROMPT ===== FINE VERIFICA DATASET =====
 ===== FINE VERIFICA DATASET =====
 SQL> SPOOL OFF
