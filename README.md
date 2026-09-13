@@ -10,7 +10,7 @@ Sono stati definiti i requisiti principali e la struttura del modello dati. Sono
 
 Il collaudo tecnico degli script 01–07 è stato completato su Oracle Database 26ai con Oracle SQLcl. I test di controllo T01–T09 hanno restituito esito positivo e l'esportazione CSV finale contiene 5 record su 9 colonne. Le evidenze di esecuzione sono raccolte nella directory `evidenze/`.
 
-Il repository verrà aggiornato progressivamente con gli sviluppi del progetto e con la documentazione prodotta durante le varie fasi di lavoro.
+Il repository raccoglie gli artefatti tecnici del progetto, gli script SQL, la documentazione del modello dati e le evidenze di collaudo. La relazione finale del Project Work viene gestita e consegnata separatamente e non è inclusa nel repository.
 
 ## Tecnologie utilizzate
 

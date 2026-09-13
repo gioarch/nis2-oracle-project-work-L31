@@ -7,3 +7,6 @@ export_nis2_demo.csv
 .DS_Store
 .idea/
 .vscode/
+
+# Relazione finale gestita separatamente
+relazione/
